@@ -42,7 +42,6 @@ sudo apt-get -y install build-essential asciidoc binutils bzip2 gawk gettext git
 cd openwrt
 git pull
 ./scripts/feeds update -a && ./scripts/feeds install -a
-rm tmp -rf
 make defconfig
 make -j8 download
 make -j$(($(nproc) + 1)) V=s
