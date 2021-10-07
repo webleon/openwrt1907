@@ -9,6 +9,16 @@ local UTIL = require "luci.util"
 local fs = require "luci.openclash"
 local uci = require "luci.model.uci".cursor()
 
+local function i(e)
+local t=0
+local a={' KB',' MB',' GB',' TB'}
+repeat
+e=e/1024
+t=t+1
+until(e<=1024)
+return string.format("%.1f",e)..a[t]
+end
+
 local p,r={}
 for x,y in ipairs(fs.glob("/etc/openclash/proxy_provider/*"))do
 r=fs.stat(y)
@@ -16,7 +26,7 @@ if r then
 p[x]={}
 p[x].name=fs.basename(y)
 p[x].mtime=os.date("%Y-%m-%d %H:%M:%S",r.mtime)
-p[x].size=fs.filesize(r.size)
+p[x].size=i(r.size)
 p[x].remove=0
 p[x].enable=false
 end
@@ -30,7 +40,7 @@ nm1=tb1:option(DummyValue,"name",translate("File Name"))
 mt1=tb1:option(DummyValue,"mtime",translate("Update Time"))
 sz1=tb1:option(DummyValue,"size",translate("Size"))
 
-btndl1 = tb1:option(Button,"download1",translate("Download Config"))
+btndl1 = tb1:option(Button,"download1",translate("Download Configurations")) 
 btndl1.template="openclash/other_button"
 btndl1.render=function(y,x,r)
 y.inputstyle="remove"
@@ -80,14 +90,14 @@ local t = {
 
 a = proxy_form:section(Table, t)
 
-o = a:option(Button, "Refresh", " ")
+o = a:option(Button, "Refresh")
 o.inputtitle = translate("Refresh Page")
 o.inputstyle = "apply"
 o.write = function()
   HTTP.redirect(DISP.build_url("admin", "services", "openclash", "proxy-provider-file-manage"))
 end
 
-o = a:option(Button, "Delete_all", " ")
+o = a:option(Button, "Delete_all")
 o.inputtitle = translate("Delete All File")
 o.inputstyle = "remove"
 o.write = function()
@@ -95,8 +105,8 @@ o.write = function()
   HTTP.redirect(DISP.build_url("admin", "services", "openclash", "proxy-provider-file-manage"))
 end
 
-o = a:option(Button, "Apply", " ")
-o.inputtitle = translate("Back Settings")
+o = a:option(Button, "Apply")
+o.inputtitle = translate("Back Configurations")
 o.inputstyle = "reset"
 o.write = function()
   HTTP.redirect(DISP.build_url("admin", "services", "openclash", "config"))

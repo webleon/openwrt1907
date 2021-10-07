@@ -52,7 +52,6 @@ end
 
 o = s:option(Value, "name", translate("Rule Providers Name"))
 o.rmempty = false
-o.default = "Rule-provider - "..sid
 
 o = s:option(ListValue, "type", translate("Rule Providers Type"))
 o.rmempty = true
@@ -109,8 +108,8 @@ local t = {
 }
 a = m:section(Table, t)
 
-o = a:option(Button,"Commit", " ")
-o.inputtitle = translate("Commit Settings")
+o = a:option(Button,"Commit")
+o.inputtitle = translate("Commit Configurations")
 o.inputstyle = "apply"
 o.write = function()
    m.uci:commit(openclash)
@@ -118,11 +117,11 @@ o.write = function()
    luci.http.redirect(m.redirect)
 end
 
-o = a:option(Button,"Back", " ")
-o.inputtitle = translate("Back Settings")
+o = a:option(Button,"Back")
+o.inputtitle = translate("Back Configurations")
 o.inputstyle = "reset"
 o.write = function()
-   m.uci:revert(openclash, sid)
+   m.uci:revert(openclash)
    luci.http.redirect(m.redirect)
 end
 

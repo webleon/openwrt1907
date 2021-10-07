@@ -14,15 +14,17 @@ font_off = [[</font>]]
 bold_on  = [[<strong>]]
 bold_off = [[</strong>]]
 
-m = Map("openclash",  translate("Config Update"))
+m = Map(openclash,  translate("Config Update"))
 m.pageaction = false
 
 s = m:section(TypedSection, "openclash")
 s.anonymous = true
 
 ---- update Settings
-o = s:option(Flag, "auto_update", translate("Auto Update"))
+o = s:option(ListValue, "auto_update", translate("Auto Update"))
 o.description = translate("Auto Update Server subscription")
+o:value("0", translate("Disable"))
+o:value("1", translate("Enable"))
 o.default=0
 
 o = s:option(ListValue, "config_auto_update_mode", translate("Update Mode"))
@@ -110,16 +112,16 @@ local t = {
 
 a = m:section(Table, t)
 
-o = a:option(Button, "Commit", " ")
-o.inputtitle = translate("Commit Settings")
+o = a:option(Button, "Commit") 
+o.inputtitle = translate("Commit Configurations")
 o.inputstyle = "apply"
 o.write = function()
 	fs.unlink("/tmp/Proxy_Group")
   m.uci:commit("openclash")
 end
 
-o = a:option(Button, "Apply", " ")
-o.inputtitle = translate("Update Config")
+o = a:option(Button, "Apply")
+o.inputtitle = translate("Apply Configurations")
 o.inputstyle = "apply"
 o.write = function()
 	fs.unlink("/tmp/Proxy_Group")
@@ -129,7 +131,7 @@ o.write = function()
 		function(s)
 		  if s.name ~= "" and s.name ~= nil and s.enabled == "1" then
 			   local back_cfg_path_yaml="/etc/openclash/backup/" .. s.name .. ".yaml"
-			   local back_cfg_path_yml="/etc/openclash/backup/" .. s.name .. ".yml"
+			   local back_cfg_path_yml="/etc/openclash/backup/" .. s.name .. ".yaml"
 			   fs.unlink(back_cfg_path_yaml)
 			   fs.unlink(back_cfg_path_yml)
 			end
@@ -137,7 +139,5 @@ o.write = function()
   SYS.call("/usr/share/openclash/openclash.sh >/dev/null 2>&1 &")
   HTTP.redirect(DISP.build_url("admin", "services", "openclash"))
 end
-
-m:append(Template("openclash/toolbar_show"))
 
 return m

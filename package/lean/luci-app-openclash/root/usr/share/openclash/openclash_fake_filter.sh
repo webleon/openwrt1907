@@ -1,12 +1,12 @@
 #!/bin/bash
 . /lib/functions.sh
-. /usr/share/openclash/log.sh
 
+START_LOG="/tmp/openclash_start.log"
 CUSTOM_FILE="/etc/openclash/custom/openclash_custom_fake_filter.list"
-FAKE_FILTER_FILE="/tmp/openclash_fake_filter.list"
-SER_FAKE_FILTER_FILE="/tmp/openclash_servers_fake_filter.conf"
+FAKE_FILTER_FILE="/etc/openclash/fake_filter.list"
+SER_FAKE_FILTER_FILE="/etc/openclash/servers_fake_filter.conf"
 
-LOG_OUT "Setting Fake IP Filter..."
+echo "正在设置Fake-IP黑名单..." >$START_LOG
 
 rm -rf "$FAKE_FILTER_FILE" 2>/dev/null
 if [ -s "$CUSTOM_FILE" ]; then
@@ -17,9 +17,10 @@ if [ -s "$CUSTOM_FILE" ]; then
       else
          continue
 	    fi
-   done 2>/dev/null
+   done
    if [ -s "$FAKE_FILTER_FILE" ]; then
-      sed -i '1i\fake-ip-filter:' "$FAKE_FILTER_FILE"
+      sed -i '1i\##Custom fake-ip-filter##' "$FAKE_FILTER_FILE"
+      echo "##Custom fake-ip-filter END##" >> "$FAKE_FILTER_FILE"
    else
       rm -rf "$FAKE_FILTER_FILE" 2>/dev/null
    fi
@@ -30,7 +31,7 @@ cfg_server_address()
 	 local section="$1"
    config_get "server" "$section" "server" ""
    
-   IFIP=$(echo $server |grep -E "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$" 2>/dev/null)
+   IFIP=$(echo $server |grep -E "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$")
    if [ -z "$IFIP" ] && [ ! -z "$server" ] && [ -z "$(grep "/$server/" "$SER_FAKE_FILTER_FILE" 2>/dev/null)" ]; then
       echo "server=/$server/$custom_domain_dns_server" >> "$SER_FAKE_FILTER_FILE"
    else

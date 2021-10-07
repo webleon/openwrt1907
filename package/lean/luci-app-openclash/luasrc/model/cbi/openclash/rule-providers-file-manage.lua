@@ -9,6 +9,16 @@ local UTIL = require "luci.util"
 local fs = require "luci.openclash"
 local uci = require "luci.model.uci".cursor()
 
+local function i(e)
+local t=0
+local a={' KB',' MB',' GB',' TB'}
+repeat
+e=e/1024
+t=t+1
+until(e<=1024)
+return string.format("%.1f",e)..a[t]
+end
+
 local g,h={}
 for n,m in ipairs(fs.glob("/etc/openclash/rule_provider/*"))do
 h=fs.stat(m)
@@ -16,7 +26,7 @@ if h then
 g[n]={}
 g[n].name=fs.basename(m)
 g[n].mtime=os.date("%Y-%m-%d %H:%M:%S",h.mtime)
-g[n].size=fs.filesize(h.size)
+g[n].size=i(h.size)
 g[n].remove=0
 g[n].enable=false
 end
@@ -30,7 +40,7 @@ nm2=tb2:option(DummyValue,"name",translate("File Name"))
 mt2=tb2:option(DummyValue,"mtime",translate("Update Time"))
 sz2=tb2:option(DummyValue,"size",translate("Size"))
 
-btndl2 = tb2:option(Button,"download2",translate("Download Config"))
+btndl2 = tb2:option(Button,"download2",translate("Download Configurations")) 
 btndl2.template="openclash/other_button"
 btndl2.render=function(m,n,h)
 m.inputstyle="remove"
@@ -80,14 +90,14 @@ local t = {
 
 a = rule_form:section(Table, t)
 
-o = a:option(Button, "Refresh", " ")
+o = a:option(Button, "Refresh")
 o.inputtitle = translate("Refresh Page")
 o.inputstyle = "apply"
 o.write = function()
   HTTP.redirect(DISP.build_url("admin", "services", "openclash", "rule-providers-file-manage"))
 end
 
-o = a:option(Button, "Delete_all", " ")
+o = a:option(Button, "Delete_all")
 o.inputtitle = translate("Delete All File")
 o.inputstyle = "remove"
 o.write = function()
@@ -95,8 +105,8 @@ o.write = function()
   HTTP.redirect(DISP.build_url("admin", "services", "openclash", "rule-providers-file-manage"))
 end
 
-o = a:option(Button, "Apply", " ")
-o.inputtitle = translate("Back Settings")
+o = a:option(Button, "Apply")
+o.inputtitle = translate("Back Configurations")
 o.inputstyle = "reset"
 o.write = function()
   HTTP.redirect(DISP.build_url("admin", "services", "openclash", "config"))
