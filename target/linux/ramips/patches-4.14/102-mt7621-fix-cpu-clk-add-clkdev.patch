@@ -153,7 +153,7 @@
 -			/* 20Mhz Xtal */
 -			cpu_clk = 20 * fbdiv * 1000 * 1000;
 -		}
-+		pll = ~(0x7ff);
++		pll &= ~(0x7ff);
 +  pll |=  (0x362);
 +  rt_memc_w32(pll,MEMC_REG_CPU_PLL);
 +  for(i=0;i<1024;i++);
